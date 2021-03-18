@@ -27,12 +27,14 @@ if __name__ == '__main__':
     bot_name = config['Telegram']['BOT_NAME']
     err_report_account = config['Telegram']['ERR_REPORT_ACCOUNT']
     heath_check_url = config['Telegram']['HEALTH_CHECK_URL']
+    loop_pause=float(config['Loop']['PAUSE'])
+
+    client = TelegramClient('ping', api_id, api_hash)
+    client.start()
 
     while True:
         requests.get(f'{heath_check_url}/start', timeout=5)
 
-        client = TelegramClient('ping', api_id, api_hash)
-        client.start()
         client.send_message(bot_name, 'ping')
         sleep(5)
         result = client.get_messages(bot_name, limit=2)
@@ -44,4 +46,7 @@ if __name__ == '__main__':
             client.send_message(err_report_account, f'😬 {bot_name} ping failed!')
 
         requests.get(heath_check_url)
-        sleep(294)
+
+        if not loop_pause:
+            break
+        sleep(loop_pause)

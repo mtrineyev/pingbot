@@ -2,6 +2,7 @@
 API_ID=1234567
 API_HASH=0123456789abcdfghijk0123456789ab
 BOT_NAME=@your_bot
+# Account/chat/group/bot error message to be sent
 ERR_REPORT_ACCOUNT=@your_tg_account
 HEALTH_CHECK_URL=https://hc-ping.com/0123abcd-01ab-01ab-01ab-012345abcdfe
 
@@ -14,4 +15,8 @@ FILE_NAME=pingbot.log
 # INFO = 20
 # DEBUG = 10
 # NOTSET = 0
-LEVEL=10
+LEVEL=30
+
+[Loop]
+# Loop pause in seconds (float), 0 if there is no loop needed
+PAUSE=0
