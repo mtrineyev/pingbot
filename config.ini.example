@@ -1,13 +1,15 @@
 [Telegram]
+# How to get API ID and HASH: https://telethon.readthedocs.io/en/latest/basic/signing-in.html
 API_ID=1234567
 API_HASH=0123456789abcdfghijk0123456789ab
-BOT_NAME=@your_bot
-# Account/chat/group/bot error message to be sent
-ERR_REPORT_ACCOUNT=@your_tg_account
-# Leave it blank, if you don't have helthchecks.io url
+BOT_NAME=@your_bot_name
+# To which account/chat/group/bot error message will be sent
+ERR_REPORT_ACCOUNT=@tg_account
+# Leave it blank if you don't have check url from helthchecks.io
 HEALTH_CHECK_URL=
 
 [Logging]
+# Leave it blank if you want get logging to the console
 FILE_NAME=pingbot.log
 # The numeric values of logging levels (https://docs.python.org/3/library/logging.html)
 # CRITICAL = 50
@@ -19,5 +21,5 @@ FILE_NAME=pingbot.log
 LEVEL=30
 
 [Loop]
-# Loop pause in seconds (float), 0 if there is no loop needed
+# A pause for a loop ping in the seconds (float), zero or blank if there are no repeats needed
 PAUSE=0
