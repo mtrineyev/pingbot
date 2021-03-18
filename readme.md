@@ -6,7 +6,7 @@ Python script Telegram-client for testing if selected Telegram bot is alive
 ## Setup and deployment
 - `git clone` this repository
 - `cd pingbot`
-- set variables in `.env`. How to get API ID: `https://telethon.readthedocs.io/en/latest/basic/signing-in.html`
+- set variables in `config.ini`. How to get API ID: `https://telethon.readthedocs.io/en/latest/basic/signing-in.html`
 - `python3 -m venv venv`
 - `source venv/bin/activate`
 - `pip install -r requirements.txt`
