@@ -4,7 +4,8 @@ API_HASH=0123456789abcdfghijk0123456789ab
 BOT_NAME=@your_bot
 # Account/chat/group/bot error message to be sent
 ERR_REPORT_ACCOUNT=@your_tg_account
-HEALTH_CHECK_URL=https://hc-ping.com/0123abcd-01ab-01ab-01ab-012345abcdfe
+# Leave it blank, if you don't have helthchecks.io url
+HEALTH_CHECK_URL=
 
 [Logging]
 FILE_NAME=pingbot.log

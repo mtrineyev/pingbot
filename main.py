@@ -1,3 +1,10 @@
+"""
+Pings the telegram bot and logs results
+All settings are stored in config.ini file
+
+(c) 2021 mtrineyev
+"""
+
 import configparser
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -33,19 +40,21 @@ if __name__ == '__main__':
     client.start()
 
     while True:
-        requests.get(f'{heath_check_url}/start', timeout=5)
+        if heath_check_url:
+            requests.get(f'{heath_check_url}/start', timeout=5)
 
         client.send_message(bot_name, 'ping')
         sleep(5)
         result = client.get_messages(bot_name, limit=2)
         if result and len(result) == 2 and result[1].text == 'ping':
             logging.warning('PING OK')
-            client.delete_messages(bot_name, [result[0], result[1]])
+            client.delete_messages(bot_name, [result[0].id, result[1].id])
         else:
             logging.error('PING FAILED')
             client.send_message(err_report_account, f'😬 {bot_name} ping failed!')
 
-        requests.get(heath_check_url)
+        if heath_check_url:
+            requests.get(heath_check_url)
 
         if not loop_pause:
             break
