@@ -2,7 +2,7 @@
 Pings the telegram bot and logs results
 All settings are stored in config.ini file
 
-(c) 2021 mtrineyev
+(c) 2021 Maksym Trineyev
 """
 
 import configparser
@@ -17,45 +17,52 @@ logging.basicConfig(
     level=int(config['Logging']['LEVEL']))
 logging.debug('Script started')
 
-from os import getenv
 import requests
 from time import sleep
 logging.debug('Standart libraries imported')
 
-from telethon import TelegramClient, sync
-logging.debug('telethon library imported')
+from telethon import TelegramClient
+logging.debug('Telethon library imported')
+
+bot_name = config['Telegram']['BOT_NAME']
+err_report = config['Telegram'].getint('ERR_REPORT_ACCOUNT')
+heath_check_url = config['Misc']['HEALTH_CHECK_URL']
+ping_word = config['Telegram']['PING_WORD']
+
+client = TelegramClient(
+    config['Telegram']['SESSION'],
+    config['Telegram']['API_ID'],
+    config['Telegram']['API_HASH'])
+
+async def ping() -> None:
+    """
+    Sends ping to the bot and analyzes the result
+    """
+    logging.debug('Ping function entered')
+    await client.start()
+    if heath_check_url:
+        requests.get(f'{heath_check_url}/start', timeout=5)
+    try:
+        await client.send_message(bot_name, ping_word)
+        sleep(config['Misc'].getfloat('PAUSE'))
+        result = await client.get_messages(bot_name, limit=2)
+    except:
+        result = None
+    if result and len(result) == 2 and result[1].text == ping_word:
+        logging.warning('PING OK')
+        await client.delete_messages(bot_name, [result[0].id, result[1].id])
+    else:
+        logging.error('PING FAILED')
+        try:
+            await client.send_message(err_report, f'😬 {bot_name} ping failed!')
+        except:
+            logging.critical('PING ERROR MESSAGE SENDING FAILED')
+    if heath_check_url:
+        requests.get(heath_check_url)
+    return
 
 
 if __name__ == '__main__':
-    logging.debug('Main block entered')
-
-    api_id = config['Telegram']['API_ID']
-    api_hash = config['Telegram']['API_HASH']
-    bot_name = config['Telegram']['BOT_NAME']
-    err_report_account = config['Telegram']['ERR_REPORT_ACCOUNT']
-    heath_check_url = config['Telegram']['HEALTH_CHECK_URL']
-    loop_pause=float(config['Loop']['PAUSE'])
-
-    client = TelegramClient('ping', api_id, api_hash)
-    client.start()
-
-    while True:
-        if heath_check_url:
-            requests.get(f'{heath_check_url}/start', timeout=5)
-
-        client.send_message(bot_name, 'ping')
-        sleep(5)
-        result = client.get_messages(bot_name, limit=2)
-        if result and len(result) == 2 and result[1].text == 'ping':
-            logging.warning('PING OK')
-            client.delete_messages(bot_name, [result[0].id, result[1].id])
-        else:
-            logging.error('PING FAILED')
-            client.send_message(err_report_account, f'😬 {bot_name} ping failed!')
-
-        if heath_check_url:
-            requests.get(heath_check_url)
-
-        if not loop_pause:
-            break
-        sleep(loop_pause)
+    logging.debug('Main section entered')
+    with client:
+        client.loop.run_until_complete(ping())
