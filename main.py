@@ -1,6 +1,5 @@
 """
-Pings the telegram bot and logs results
-All settings are stored in config.ini file
+Pings the Telegram bot and logs results
 
 (c) 2021 Maksym Trineyev
 """
@@ -17,6 +16,7 @@ logging.basicConfig(
     level=int(config['Logging']['LEVEL']))
 logging.debug('Script started')
 
+import argparse
 import requests
 from time import sleep
 logging.debug('Standart libraries imported')
@@ -24,8 +24,19 @@ logging.debug('Standart libraries imported')
 from telethon import TelegramClient
 logging.debug('Telethon library imported')
 
-bot_name = config['Telegram']['BOT_NAME']
-err_report = config['Telegram'].getint('ERR_REPORT_ACCOUNT')
+parser = argparse.ArgumentParser(
+    prog=f'python3 main.py',
+    usage='%(prog)s [option]',
+    description='The tool of pinging the Telegram bot'
+)
+parser.add_argument('-b', '--bot', type=str,
+    help='name of the bot to ping (overwrites the variable from config.ini)')
+
+bot_name = parser.parse_args().bot or config['Telegram']['BOT_NAME']
+try:
+    er_report = config['Telegram'].getint('ERR_REPORT_ACCOUNT')
+except ValueError:
+    er_report = config['Telegram']['ERR_REPORT_ACCOUNT']
 heath_check_url = config['Misc']['HEALTH_CHECK_URL']
 ping_word = config['Telegram']['PING_WORD']
 
@@ -49,14 +60,15 @@ async def ping() -> None:
     except:
         result = None
     if result and len(result) == 2 and result[1].text == ping_word:
-        logging.warning('PING OK')
+        logging.warning(f'Ping {bot_name} OK')
         await client.delete_messages(bot_name, [result[0].id, result[1].id])
     else:
-        logging.error('PING FAILED')
+        logging.error(f'Ping {bot_name} FAILED')
         try:
-            await client.send_message(err_report, f'😬 {bot_name} ping failed!')
+            await client.send_message(er_report, f'😬 {bot_name} ping FAILED!')
         except:
-            logging.critical('PING ERROR MESSAGE SENDING FAILED')
+            logging.critical(
+                f'Ping {bot_name} error message sending to {er_report} FAILED')
     if heath_check_url:
         requests.get(heath_check_url)
     return
