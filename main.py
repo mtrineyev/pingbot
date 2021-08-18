@@ -38,6 +38,7 @@ try:
 except ValueError:
     er_report = config['Telegram']['ERR_REPORT_ACCOUNT']
 heath_check_url = config['Misc']['HEALTH_CHECK_URL']
+slack_webhook = config['Misc']['SLACK_MEDIAMONITORINGBOT_WEBHOOK']
 ping_word = config['Telegram']['PING_WORD']
 
 client = TelegramClient(
@@ -66,6 +67,12 @@ async def ping() -> None:
         logging.error(f'Ping {bot_name} FAILED')
         try:
             await client.send_message(er_report, f'😬 {bot_name} ping FAILED!')
+            if slack_webhook:
+                requests.post(slack_webhook, json={
+                    'username': 'Ping Bot',
+                    'icon_emoji': ':fire_engine:',
+                    'text': '*[@MediaMonitoringBot](https://t.me/mediamonitoringbot) ping FAILED!*'
+                })
         except:
             logging.critical(
                 f'Ping {bot_name} error message sending to {er_report} FAILED')

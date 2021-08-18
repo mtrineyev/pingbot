@@ -21,6 +21,8 @@ LEVEL = 30
 
 [Misc]
 # Leave it blank if you don't have the check url from helthchecks.io
-HEALTH_CHECK_URL=
+HEALTH_CHECK_URL =
+# Slack group alert webhook
+SLACK_MEDIAMONITORINGBOT_WEBHOOK =
 # Pause between sending ping and checking the result in the seconds
 PAUSE = 10
